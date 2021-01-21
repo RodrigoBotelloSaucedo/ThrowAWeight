@@ -1,0 +1,74 @@
+////////////////
+const int MotorDelay = 2000; //change this value to make the door open more or less
+const int TimeDelay = 100; // change this value to change the time between the door opening and closing
+const int ActivationDistance = 100; //change this value to change the distance from your hand to the sensor to activate the door.
+///////////////
+
+const int trigPin2 = 10; // Trigger 
+const int echoPin2 = 11; // Echo
+
+const int ComPin = 5;
+
+long duration2; // This is just a number variable store 32 bits
+int distanceCm2; // This is an integer variable
+
+
+void setup() {
+
+  pinMode(8, OUTPUT);
+  pinMode(9, OUTPUT);
+
+  // Set Both OUTPUTS to LOW to ensure they are closed
+  // HIGH 5V: LOW 0 V
+  digitalWrite(8, LOW); 
+  digitalWrite(9, LOW);
+
+  pinMode(trigPin2, OUTPUT);
+  pinMode(echoPin2, INPUT);
+
+  pinMode(ComPin, OUTPUT);
+
+  // BaudRate for Sensor
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  digitalWrite(trigPin2, LOW); // Ensure clean HIGH pulse
+  delayMicroseconds(5);
+  digitalWrite(trigPin2, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin2, LOW);
+
+  // PulseIn() - reads pulse as either high or low on a pin
+  // if value is HIGH pulseIn() waits for the pin to go from LOW to HIGH
+  // then waits for pin to go low and stops timing. Returns in Microseconds or gives up and returns zero
+  duration2 = pulseIn(echoPin2, HIGH); 
+  distanceCm2 = duration2 * 0.034 / 2;
+
+  // It is printing this
+  Serial.println(distanceCm2);
+
+  if (distanceCm2 <= ActivationDistance) {
+    
+    digitalWrite(ComPin, HIGH);
+    
+    digitalWrite(8, HIGH);
+    delay(MotorDelay);
+    digitalWrite(8, LOW);
+    delay(TimeDelay);
+    digitalWrite(9, HIGH);
+    delay(MotorDelay);
+    digitalWrite(9, LOW);
+    delay(2000);
+
+    digitalWrite(8, LOW);
+    delay(MotorDelay);
+    digitalWrite(8, HIGH);
+    delay(TimeDelay);
+    digitalWrite(9, LOW);
+    delay(MotorDelay);
+    digitalWrite(9, HIGH);
+    delay(2000);
+  }
+}
